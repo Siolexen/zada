@@ -34,12 +34,27 @@ class EventController extends Controller
         return view('events.create');
     }
 
+    public function edit(){
+        return view('events.create');
+    }
 
     public function store(StoreEventRequest $request){
         $input = $request->all();
         $input['slug'] = \Str::snake($request->name, '-');
         if($event = Event::create($input)) {
             $event->user()->attach(auth()->user()->id);
+            return Redirect::back()->with('status', 'Profile updated!');
+        }else{
+            return Redirect::back()->with('status', 'Error');
+        }
+
+    }
+
+    public function update(StoreEventRequest $request){
+        $input = $request->all();
+        $input['slug'] = \Str::snake($request->name, '-');
+        if($event = Event::update($input)) {
+            $event->user()->syncWithoutDetaching(auth()->user()->id);
             return Redirect::back()->with('status', 'Profile updated!');
         }else{
             return Redirect::back()->with('status', 'Error');

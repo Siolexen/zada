@@ -20,29 +20,11 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::with('user')->get();
-//dd($events);
+
         return json_encode(
             [
                 'events' => EventResource::collection($events)
             ]
         );
-    }
-
-    public function create(){
-        return view('events.create');
-    }
-
-
-
-    public function store(StoreEventRequest $request){
-        $input = $request->all();
-        $input['slug'] = \Str::snake($request->name, '-');
-        if($event = Event::create($input)) {
-            $event->user()->attach(auth()->user()->id);
-            return Redirect::back()->with('status', 'Profile updated!');
-        }else{
-            return Redirect::back()->with('status', 'Error');
-        }
-
     }
 }
