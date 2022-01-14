@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEventRequest;
 use App\Models\Event;
+use App\Services\EventService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -39,26 +40,24 @@ class EventController extends Controller
     }
 
     public function store(StoreEventRequest $request){
-        $input = $request->all();
-        $input['slug'] = \Str::snake($request->name, '-');
-        if($event = Event::create($input)) {
-            $event->user()->attach(auth()->user()->id);
-            return Redirect::back()->with('status', 'Profile updated!');
+
+        $eventService = new EventService();
+
+        if($eventService->create($request)) {
+            return Redirect::back()->with('status', 'Event dodany');
         }else{
             return Redirect::back()->with('status', 'Error');
         }
-
     }
 
     public function update(StoreEventRequest $request){
-        $input = $request->all();
-        $input['slug'] = \Str::snake($request->name, '-');
-        if($event = Event::update($input)) {
-            $event->user()->syncWithoutDetaching(auth()->user()->id);
-            return Redirect::back()->with('status', 'Profile updated!');
+
+        $eventService = new EventService();
+
+        if($eventService->update($request)) {
+            return Redirect::back()->with('status', 'Event zaaktualizowny');
         }else{
             return Redirect::back()->with('status', 'Error');
         }
-
     }
 }
